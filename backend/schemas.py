@@ -1,14 +1,16 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-class FlashcardCreate(BaseModel):
-    question: str
-    answer: str
+class WordCreate(BaseModel):
+    word: str
+    category: str
+    image_url: str
 
-class Flashcard(BaseModel):
+class Word(BaseModel):
     id: int
-    question: str
-    answer: str
+    word: str
+    category: str
+    image_url: str
     created_at: datetime
     
     class Config:
