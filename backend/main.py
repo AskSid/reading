@@ -42,10 +42,11 @@ app.add_middleware(
 def get_words(db: Session = Depends(get_db)):
     try:
         words = db.query(WordModel).all()
+        # Convert graphemes list to string if needed
+        for word in words:
+            if isinstance(word.graphemes, list):
+                word.graphemes = ",".join(word.graphemes)
         logger.info(f"Successfully retrieved {len(words)} words")
-        # Log the first word's data for debugging
-        if words:
-            logger.info(f"First word data: {words[0].__dict__}")
         return words
     except Exception as e:
         logger.error(f"Error retrieving words: {str(e)}")
