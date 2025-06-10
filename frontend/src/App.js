@@ -59,10 +59,222 @@ function App() {
     window.speechSynthesis.speak(utterance);
   };
 
+  const styles = {
+    container: {
+      padding: '20px',
+      maxWidth: '800px',
+      margin: '0 auto',
+      backgroundColor: '#FDF0D5',
+      minHeight: '100vh',
+      fontFamily: "'Open Sans', sans-serif",
+    },
+    header: {
+      color: '#003049',
+      textAlign: 'center',
+      marginBottom: '30px',
+      fontWeight: '700',
+    },
+    cardContainer: {
+      border: '2px solid #003049',
+      borderRadius: '16px',
+      padding: '30px',
+      minHeight: '400px',
+      marginBottom: '40px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'white',
+      position: 'relative',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    },
+    image: {
+      maxWidth: '100%',
+      maxHeight: '250px',
+      marginBottom: '30px',
+      borderRadius: '8px',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    },
+    word: {
+      fontSize: '48px',
+      fontWeight: '700',
+      color: '#780000',
+      marginBottom: '15px',
+      textAlign: 'center',
+    },
+    category: {
+      fontSize: '20px',
+      fontWeight: '600',
+      color: '#669BBC',
+      marginBottom: '15px',
+      textAlign: 'center',
+    },
+    graphemes: {
+      fontSize: '18px',
+      fontWeight: '400',
+      color: '#003049',
+      marginBottom: '20px',
+      textAlign: 'center',
+    },
+    pronounceButton: {
+      position: 'absolute',
+      top: '20px',
+      right: '20px',
+      width: '50px',
+      height: '50px',
+      borderRadius: '50%',
+      backgroundColor: '#C1121F',
+      color: 'white',
+      border: 'none',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '24px',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+      transition: 'transform 0.2s',
+    },
+    navigationButtons: {
+      display: 'flex',
+      gap: '20px',
+      justifyContent: 'center',
+      marginBottom: '40px',
+    },
+    navButton: {
+      padding: '12px 24px',
+      backgroundColor: '#003049',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: '600',
+      transition: 'background-color 0.2s',
+    },
+    formContainer: {
+      backgroundColor: 'white',
+      padding: '30px',
+      borderRadius: '16px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    },
+    formTitle: {
+      color: '#003049',
+      marginBottom: '20px',
+      fontWeight: '700',
+    },
+    input: {
+      width: '100%',
+      padding: '12px',
+      marginBottom: '15px',
+      border: '2px solid #669BBC',
+      borderRadius: '8px',
+      fontSize: '16px',
+      fontFamily: "'Open Sans', sans-serif",
+    },
+    submitButton: {
+      width: '100%',
+      padding: '12px',
+      backgroundColor: '#780000',
+      color: 'white',
+      border: 'none',
+      borderRadius: '8px',
+      fontSize: '16px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s',
+    },
+  };
+
   if (words.length === 0) {
     return (
-      <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-        <h1>Word Cards</h1>
+      <div style={styles.container}>
+        <h1 style={styles.header}>Word Cards</h1>
+        <div style={styles.formContainer}>
+          <form onSubmit={addWord}>
+            <div style={{ marginBottom: '10px' }}>
+              <input
+                type="text"
+                placeholder="Word"
+                value={newWord}
+                onChange={(e) => setNewWord(e.target.value)}
+                required
+                style={styles.input}
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <input
+                type="text"
+                placeholder="Category"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                required
+                style={styles.input}
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <input
+                type="text"
+                placeholder="Image URL (optional)"
+                value={newImageUrl}
+                onChange={(e) => setNewImageUrl(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <input
+                type="text"
+                placeholder="Graphemes (optional) - e.g., sh, i, p"
+                value={newGraphemes}
+                onChange={(e) => setNewGraphemes(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+            <button type="submit" style={styles.submitButton}>Add Word</button>
+          </form>
+          <p style={{ textAlign: 'center', color: '#003049', marginTop: '20px' }}>
+            No words yet. Add your first one above!
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={styles.container}>
+      <h1 style={styles.header}>Word Cards ({currentCard + 1}/{words.length})</h1>
+      
+      <div style={styles.cardContainer}>
+        <button 
+          onClick={() => speakWord(words[currentCard]?.original_word)}
+          style={styles.pronounceButton}
+        >
+          🔊
+        </button>
+        <img 
+          src={words[currentCard]?.image_url} 
+          alt={words[currentCard]?.original_word}
+          style={styles.image}
+        />
+        <h2 style={styles.word}>
+          {words[currentCard]?.original_word}
+        </h2>
+        <p style={styles.category}>
+          Category: {words[currentCard]?.category}
+        </p>
+        {words[currentCard]?.graphemes && (
+          <p style={styles.graphemes}>
+            Graphemes: {words[currentCard]?.graphemes}
+          </p>
+        )}
+      </div>
+
+      <div style={styles.navigationButtons}>
+        <button onClick={prevCard} style={styles.navButton}>Previous</button>
+        <button onClick={nextCard} style={styles.navButton}>Next</button>
+      </div>
+
+      <div style={styles.formContainer}>
+        <h3 style={styles.formTitle}>Add New Word</h3>
         <form onSubmit={addWord}>
           <div style={{ marginBottom: '10px' }}>
             <input
@@ -71,7 +283,7 @@ function App() {
               value={newWord}
               onChange={(e) => setNewWord(e.target.value)}
               required
-              style={{ width: '100%', padding: '8px', marginBottom: '5px' }}
+              style={styles.input}
             />
           </div>
           <div style={{ marginBottom: '10px' }}>
@@ -81,7 +293,7 @@ function App() {
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
               required
-              style={{ width: '100%', padding: '8px', marginBottom: '5px' }}
+              style={styles.input}
             />
           </div>
           <div style={{ marginBottom: '10px' }}>
@@ -90,124 +302,21 @@ function App() {
               placeholder="Image URL (optional)"
               value={newImageUrl}
               onChange={(e) => setNewImageUrl(e.target.value)}
-              style={{ width: '100%', padding: '8px', marginBottom: '5px' }}
+              style={styles.input}
             />
           </div>
           <div style={{ marginBottom: '10px' }}>
             <input
               type="text"
-              placeholder="Graphemes (optional)"
+              placeholder="Graphemes (optional) - e.g., sh, i, p"
               value={newGraphemes}
               onChange={(e) => setNewGraphemes(e.target.value)}
-              style={{ width: '100%', padding: '8px' }}
+              style={styles.input}
             />
           </div>
-          <button type="submit" style={{ padding: '10px 20px' }}>Add Word</button>
+          <button type="submit" style={styles.submitButton}>Add Word</button>
         </form>
-        <p>No words yet. Add your first one above!</p>
       </div>
-    );
-  }
-
-  return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-      <h1>Word Cards ({currentCard + 1}/{words.length})</h1>
-      
-      <div style={{ 
-        border: '1px solid #ccc', 
-        borderRadius: '8px', 
-        padding: '20px', 
-        minHeight: '300px',
-        marginBottom: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f9f9f9'
-      }}>
-        <img 
-          src={words[currentCard]?.image_url} 
-          alt={words[currentCard]?.original_word}
-          style={{ 
-            maxWidth: '100%', 
-            maxHeight: '200px', 
-            marginBottom: '20px',
-            borderRadius: '4px'
-          }}
-        />
-        <h2 style={{ fontSize: '24px', marginBottom: '10px' }}>
-          {words[currentCard]?.original_word}
-        </h2>
-        <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>
-          Category: {words[currentCard]?.category}
-        </p>
-        {words[currentCard]?.graphemes && (
-          <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>
-            Graphemes: {words[currentCard]?.graphemes}
-          </p>
-        )}
-        <button 
-          onClick={() => speakWord(words[currentCard]?.original_word)}
-          style={{ 
-            padding: '10px 20px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          🔊 Pronounce
-        </button>
-      </div>
-
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '20px' }}>
-        <button onClick={prevCard} style={{ padding: '10px 20px' }}>Previous</button>
-        <button onClick={nextCard} style={{ padding: '10px 20px' }}>Next</button>
-      </div>
-
-      <form onSubmit={addWord}>
-        <h3>Add New Word</h3>
-        <div style={{ marginBottom: '10px' }}>
-          <input
-            type="text"
-            placeholder="Word"
-            value={newWord}
-            onChange={(e) => setNewWord(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px', marginBottom: '5px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <input
-            type="text"
-            placeholder="Category"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px', marginBottom: '5px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <input
-            type="text"
-            placeholder="Image URL (optional)"
-            value={newImageUrl}
-            onChange={(e) => setNewImageUrl(e.target.value)}
-            style={{ width: '100%', padding: '8px', marginBottom: '5px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <input
-            type="text"
-            placeholder="Graphemes (optional)"
-            value={newGraphemes}
-            onChange={(e) => setNewGraphemes(e.target.value)}
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        <button type="submit" style={{ padding: '10px 20px' }}>Add Word</button>
-      </form>
     </div>
   );
 }
