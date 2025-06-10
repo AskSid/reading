@@ -58,7 +58,12 @@ def get_words(db: Session = Depends(get_db)):
 @app.post("/words", response_model=Word)
 def create_word(word: WordCreate, db: Session = Depends(get_db)):
     try:
-        db_word = WordModel(**word.model_dump())
+        # Convert graphemes string to array if provided
+        word_data = word.model_dump()
+        if word_data.get('graphemes'):
+            word_data['graphemes'] = [g.strip() for g in word_data['graphemes'].split(',')]
+        
+        db_word = WordModel(**word_data)
         db.add(db_word)
         db.commit()
         db.refresh(db_word)
