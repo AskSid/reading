@@ -42,10 +42,6 @@ app.add_middleware(
 def get_words(db: Session = Depends(get_db)):
     try:
         words = db.query(WordModel).all()
-        # Convert graphemes list to string if needed
-        for word in words:
-            if isinstance(word.graphemes, list):
-                word.graphemes = ",".join(word.graphemes)
         logger.info(f"Successfully retrieved {len(words)} words")
         return words
     except Exception as e:
@@ -58,12 +54,7 @@ def get_words(db: Session = Depends(get_db)):
 @app.post("/words", response_model=Word)
 def create_word(word: WordCreate, db: Session = Depends(get_db)):
     try:
-        # Convert graphemes string to array if provided
-        word_data = word.model_dump()
-        if word_data.get('graphemes'):
-            word_data['graphemes'] = [g.strip() for g in word_data['graphemes'].split(',')]
-        
-        db_word = WordModel(**word_data)
+        db_word = WordModel(**word.model_dump())
         db.add(db_word)
         db.commit()
         db.refresh(db_word)
