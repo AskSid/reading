@@ -11,6 +11,7 @@ function App() {
   const [newWord, setNewWord] = useState('');
   const [newCategory, setNewCategory] = useState('');
   const [newImageUrl, setNewImageUrl] = useState('');
+  const [newGraphemes, setNewGraphemes] = useState('');
 
   useEffect(() => {
     fetchWords();
@@ -31,11 +32,13 @@ function App() {
       await axios.post(`${API_URL}/words`, {
         original_word: newWord,
         category: newCategory,
-        image_url: newImageUrl || 'https://via.placeholder.com/300x200?text=Word+Image'
+        image_url: newImageUrl || 'https://via.placeholder.com/300x200?text=Word+Image',
+        graphemes: newGraphemes || null
       });
       setNewWord('');
       setNewCategory('');
       setNewImageUrl('');
+      setNewGraphemes('');
       fetchWords();
     } catch (error) {
       console.error('Error adding word:', error);
@@ -87,6 +90,15 @@ function App() {
               placeholder="Image URL (optional)"
               value={newImageUrl}
               onChange={(e) => setNewImageUrl(e.target.value)}
+              style={{ width: '100%', padding: '8px', marginBottom: '5px' }}
+            />
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <input
+              type="text"
+              placeholder="Graphemes (optional)"
+              value={newGraphemes}
+              onChange={(e) => setNewGraphemes(e.target.value)}
               style={{ width: '100%', padding: '8px' }}
             />
           </div>
@@ -129,6 +141,11 @@ function App() {
         <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>
           Category: {words[currentCard]?.category}
         </p>
+        {words[currentCard]?.graphemes && (
+          <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>
+            Graphemes: {words[currentCard]?.graphemes}
+          </p>
+        )}
         <button 
           onClick={() => speakWord(words[currentCard]?.original_word)}
           style={{ 
@@ -177,6 +194,15 @@ function App() {
             placeholder="Image URL (optional)"
             value={newImageUrl}
             onChange={(e) => setNewImageUrl(e.target.value)}
+            style={{ width: '100%', padding: '8px', marginBottom: '5px' }}
+          />
+        </div>
+        <div style={{ marginBottom: '10px' }}>
+          <input
+            type="text"
+            placeholder="Graphemes (optional)"
+            value={newGraphemes}
+            onChange={(e) => setNewGraphemes(e.target.value)}
             style={{ width: '100%', padding: '8px' }}
           />
         </div>
