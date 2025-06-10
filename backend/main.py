@@ -43,9 +43,15 @@ def get_words(db: Session = Depends(get_db)):
     try:
         words = db.query(WordModel).all()
         logger.info(f"Successfully retrieved {len(words)} words")
+        # Log the first word's data for debugging
+        if words:
+            logger.info(f"First word data: {words[0].__dict__}")
         return words
     except Exception as e:
         logger.error(f"Error retrieving words: {str(e)}")
+        logger.error(f"Error type: {type(e)}")
+        import traceback
+        logger.error(f"Full traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/words", response_model=Word)
@@ -55,7 +61,7 @@ def create_word(word: WordCreate, db: Session = Depends(get_db)):
         db.add(db_word)
         db.commit()
         db.refresh(db_word)
-        logger.info(f"Successfully created word: {word.word}")
+        logger.info(f"Successfully created word: {word.original_word}")
         return db_word
     except Exception as e:
         logger.error(f"Error creating word: {str(e)}")
