@@ -11,7 +11,6 @@ class Word(BaseModel):
     original_word: str
     category: str
     image_url: str
-    created_at: datetime
     
     class Config:
         from_attributes = True
