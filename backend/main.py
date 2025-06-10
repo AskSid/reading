@@ -4,6 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
+from sqlalchemy import text
 
 from database import engine, get_db
 from models import Base, Word as WordModel
@@ -13,6 +14,31 @@ from schemas import Word, WordCreate
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def migrate_graphemes_to_strings():
+    """Migrate existing graphemes arrays to strings in the database."""
+    try:
+        with engine.connect() as conn:
+            # First, check if we need to migrate
+            result = conn.execute(text("""
+                SELECT column_name, data_type 
+                FROM information_schema.columns 
+                WHERE table_name = 'words' AND column_name = 'graphemes'
+            """))
+            column_info = result.fetchone()
+            
+            if column_info and column_info[1] == 'ARRAY':
+                logger.info("Starting graphemes migration from ARRAY to STRING")
+                # Convert arrays to strings
+                conn.execute(text("""
+                    UPDATE words 
+                    SET graphemes = array_to_string(graphemes, ',')
+                    WHERE graphemes IS NOT NULL
+                """))
+                conn.commit()
+                logger.info("Successfully migrated graphemes to strings")
+    except Exception as e:
+        logger.error(f"Error during migration: {str(e)}")
+
 # Log database URL (without password)
 db_url = os.getenv("DATABASE_URL", "")
 if db_url:
@@ -21,7 +47,8 @@ if db_url:
 
 try:
     Base.metadata.create_all(bind=engine)
-    logger.info("Database tables created successfully")
+    migrate_graphemes_to_strings()  # Run migration after table creation
+    logger.info("Database tables created and migration completed successfully")
 except Exception as e:
     logger.error(f"Error creating database tables: {str(e)}")
 
