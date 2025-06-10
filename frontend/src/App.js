@@ -29,7 +29,7 @@ function App() {
     e.preventDefault();
     try {
       await axios.post(`${API_URL}/words`, {
-        word: newWord,
+        original_word: newWord,
         category: newCategory,
         image_url: newImageUrl || 'https://via.placeholder.com/300x200?text=Word+Image'
       });
@@ -115,7 +115,7 @@ function App() {
       }}>
         <img 
           src={words[currentCard]?.image_url} 
-          alt={words[currentCard]?.word}
+          alt={words[currentCard]?.original_word}
           style={{ 
             maxWidth: '100%', 
             maxHeight: '200px', 
@@ -124,13 +124,13 @@ function App() {
           }}
         />
         <h2 style={{ fontSize: '24px', marginBottom: '10px' }}>
-          {words[currentCard]?.word}
+          {words[currentCard]?.original_word}
         </h2>
         <p style={{ fontSize: '16px', color: '#666', marginBottom: '15px' }}>
           Category: {words[currentCard]?.category}
         </p>
         <button 
-          onClick={() => speakWord(words[currentCard]?.word)}
+          onClick={() => speakWord(words[currentCard]?.original_word)}
           style={{ 
             padding: '10px 20px',
             backgroundColor: '#007bff',

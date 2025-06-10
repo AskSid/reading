@@ -2,13 +2,13 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class WordCreate(BaseModel):
-    word: str
+    original_word: str
     category: str
     image_url: str
 
 class Word(BaseModel):
     id: int
-    word: str
+    original_word: str
     category: str
     image_url: str
     created_at: datetime
